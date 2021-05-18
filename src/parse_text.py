@@ -15,7 +15,7 @@ def parse_text(file_name: str, patterns: [str]) -> str:
         # print('-----> ', line)
         if any(pattern in line for pattern in patterns):
             flag = 1
-        elif flag == 1 and line not in {'', '\n'} and 'point' not in line and '/1' not in line:
+        elif flag == 1 and line not in {'', '\n'} and 'point' not in line and '1' not in line and 'Вопрос' not in line and 'Показать ответ' not in line:
             result_text += line.strip()
             break
     if result_text == '':
