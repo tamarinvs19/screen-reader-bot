@@ -8,12 +8,12 @@ import requests
 dir_name: str = '~/Pictures/Screenshots/'
 output_dir: str = 'data/texts/'
 patterns: [str] = [
-    'Вопрос',
-    'Воnрос',
-    'Вoпрос',
-    'Bопрос',
-    'Bоnрос',
-    'Bonpoc',
+    'Вопрос ',
+    'Воnрос ',
+    'Вoпрос ',
+    'Bопрос ',
+    'Bоnрос ',
+    'Bonpoc ',
     'Отправить',
     ]
 TOKEN = '1761503051:AAG74bLr09NDP03IlZ9nSMM6ySCloKQaqPg'
@@ -46,6 +46,7 @@ def send_info():
 
 
 if __name__ == '__main__':
+    print('Run MAIN')
     while True:
         send_info()
         time.sleep(15)

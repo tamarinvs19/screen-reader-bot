@@ -10,7 +10,7 @@ import main
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
-TOKEN = '1761503051:AAG74bLr09NDP03IlZ9nSMM6ySCloKQaqPg'
+TOKEN = ''
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
