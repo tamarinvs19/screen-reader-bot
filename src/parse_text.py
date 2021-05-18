@@ -16,7 +16,7 @@ def parse_text(file_name: str, patterns: [str]) -> str:
         if any(pattern in line for pattern in patterns):
             flag = 1
         elif line not in {'', '\n'} and 'Вопрос' not in line and 'Показать ответ' not in line:
-            if flag == 2:
+            if flag == 2 or len(line) > 40:
                 result_text += line.strip()
                 break
             else: 

@@ -6,6 +6,7 @@ import time
 import requests
 
 import main
+import get_answer as mod_get_answer
 
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
@@ -34,9 +35,16 @@ def help_command(update: Update, _: CallbackContext) -> None:
 
 def echo(update: Update, _: CallbackContext) -> None:
     info = main.main()
-    for data in info:
-        update.message.reply_text('__Question__: {} \n\n__Answer__: {}'.format(str(data['question']), str(data['answer'])))
+    if len(info) < 15:
+        for data in info:
+            update.message.reply_text('__Question__: {} \n\n__Answer__: {}'.format(str(data['question']), str(data['answer'])))
 
+
+def get_answer(update: Update, context: CallbackContext) -> None:
+    info = mod_get_answer.get_answer(context.args[0])
+    if len(info) < 15:
+        for data in info:
+            update.message.reply_text('__Question__: {} \n\n__Answer__: {}'.format(str(data['question']), str(data['answer'])))
 
 def inf_echo(update: Update, _: CallbackContext) -> None:
     update.message.reply_text('OK')
@@ -55,6 +63,7 @@ def main_bot() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("run_inf", inf_echo))
+    dispatcher.add_handler(CommandHandler("j", get_answer))
     dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
 
     updater.start_polling()
