@@ -33,7 +33,8 @@ def help_command(update: Update, _: CallbackContext) -> None:
     /help          : this help
     /start         : say hello
     /j <text>      : found text in all questions and return answers
-    /inf           : run an infinity checking screens
+    /inf           : run an infinity checking screens and sending here
+    /channal       : run an infinity checking screens and sending to the channal 
     <another text> : found screens on this computer and retrun answers
     """)
 
@@ -68,6 +69,15 @@ def send_telegram(text: str):
     requests.get(url.format(cfg.TOKEN, cfg.CHANNEL_ID, text))
 
 
+def send_info(answers: list[dict], sender):
+    if len(answers) < cfg.MAX_MESSAGE_COUNT:
+        for answer in answers:
+            sender(
+                '__Question__: {} \n\n__Answer__: {}'.
+                format(str(answer['question']), str(answer['answer']))
+                )
+
+
 def main_bot() -> None:
     """Start the bot."""
     updater = Updater(cfg.TOKEN)
@@ -76,6 +86,7 @@ def main_bot() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("inf", run_infty_autoscaning))
+    dispatcher.add_handler(CommandHandler("inf_channal", autosending_to_channal))
     dispatcher.add_handler(CommandHandler("j", get_answer))
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, echo)
@@ -83,16 +94,6 @@ def main_bot() -> None:
 
     updater.start_polling()
     updater.idle()
-
-
-
-def send_info(answers: list[dict], sender):
-    if len(answers) < cfg.MAX_MESSAGE_COUNT:
-        for answer in answers:
-            sender(
-                '__Question__: {} \n\n__Answer__: {}'.
-                format(str(answer['question']), str(answer['answer']))
-                )
 
 
 if __name__ == '__main__':
