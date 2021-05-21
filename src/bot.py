@@ -1,17 +1,15 @@
-#!/usr/bin/env python
-# -- coding: utf-8 -- –
-
 import logging
 import time
 import requests
 
-import main
-import get_answer as mod_get_answer
-
 from telegram import Update, ForceReply
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
 
-TOKEN = ''
+import config as cfg
+import main
+import get_answer as mod_get_answer
+
+
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -30,44 +28,71 @@ def start(update: Update, _: CallbackContext) -> None:
 
 def help_command(update: Update, _: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text("""
+    Commands:
+    /help          : this help
+    /start         : say hello
+    /j <text>      : found text in all questions and return answers
+    /inf           : run an infinity checking screens
+    <another text> : found screens on this computer and retrun answers
+    """)
 
 
 def echo(update: Update, _: CallbackContext) -> None:
-    info = main.main()
-    if len(info) < 15:
-        for data in info:
-            update.message.reply_text('__Question__: {} \n\n__Answer__: {}'.format(str(data['question']), str(data['answer'])))
+    answers = main.main()
+    send_info(answers, update.message.reply_text)
 
 
 def get_answer(update: Update, context: CallbackContext) -> None:
-    info = mod_get_answer.get_answer(context.args[0])
-    if len(info) < 15:
-        for data in info:
-            update.message.reply_text('__Question__: {} \n\n__Answer__: {}'.format(str(data['question']), str(data['answer'])))
+    answers = mod_get_answer.get_answer(context.args[0])
+    send_info(answers, update.message.reply_text)
 
-def inf_echo(update: Update, _: CallbackContext) -> None:
-    update.message.reply_text('OK')
+
+def run_infty_autoscaning(update: Update, context: CallbackContext) -> None:
+    update.message.reply_text('Activated infty scaninig mode')
     while True:
-        info = main.main()
-        for data in info:
-            update.message.reply_text('__Question__: {} \n\n__Answer__: {}'.format(str(data['question']), str(data['answer'])))
-        time.sleep(15)
+        answers = main.main()
+        send_info(answers, update.message.reply_text)
+        time.sleep(cfg.DELAY)
+
+
+def autosending_to_channal(update: Update, context: CallbackContext):
+    update.message.reply_text('Activated infty scaninig mode for channal')
+    while True:
+        answers = main.main()
+        send_info(answers, send_telegram)
+
+
+def send_telegram(text: str):
+    url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'
+    requests.get(url.format(cfg.TOKEN, cfg.CHANNEL_ID, text))
 
 
 def main_bot() -> None:
     """Start the bot."""
-    updater = Updater(TOKEN)
+    updater = Updater(cfg.TOKEN)
 
     dispatcher = updater.dispatcher
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
-    dispatcher.add_handler(CommandHandler("run_inf", inf_echo))
+    dispatcher.add_handler(CommandHandler("inf", run_infty_autoscaning))
     dispatcher.add_handler(CommandHandler("j", get_answer))
-    dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, echo))
+    dispatcher.add_handler(
+        MessageHandler(Filters.text & ~Filters.command, echo)
+        )
 
     updater.start_polling()
     updater.idle()
+
+
+
+def send_info(answers: list[dict], sender):
+    if len(answers) < cfg.MAX_MESSAGE_COUNT:
+        for answer in answers:
+            sender(
+                '__Question__: {} \n\n__Answer__: {}'.
+                format(str(answer['question']), str(answer['answer']))
+                )
 
 
 if __name__ == '__main__':
