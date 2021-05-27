@@ -1,6 +1,6 @@
 # Telegram bot parameters
-TOKEN = '1829257299:AAE49rcutLGsXhIYRODqQudxc3QEOpcpiTw'
-CHANNEL_ID = '-1001441669791'
+TOKEN = ''
+CHANNEL_ID = ''
 
 # Filtering spam messages
 MAX_MESSAGE_COUNT = 15
