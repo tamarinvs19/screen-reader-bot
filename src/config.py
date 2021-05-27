@@ -14,7 +14,7 @@ CROP_RIGHT = 400
 # Table with answers: data/philosophy.csv or data/effective_communication.csv
 ANSWERS_TABLE = 'data/philosophy.csv'
 
-# Directory with screenshots. 
+# Directory with screenshots.
 # Remember that all pictures here will be deleted after scanning!
 DIR_NAME: str = '~/Pictures/Screenshots/'
 
