@@ -1,6 +1,6 @@
 # Telegram bot parameters
-TOKEN = ''
-CHANNEL_ID = ''
+TOKEN = 'your-token'
+CHANNEL_ID = 'your-channel-id'
 
 # Filtering spam messages
 MAX_MESSAGE_COUNT = 15
@@ -17,6 +17,7 @@ ANSWERS_TABLE = 'data/philosophy.csv'
 # Directory with screenshots.
 # Remember that all pictures here will be deleted after scanning!
 DIR_NAME: str = '~/Pictures/Screenshots/'
+BACKUP_DIR: str = '~/Pictures/Screenshots_back/'
 
 # Technical directory for parsing texts
 OUTPUT_DIR: str = 'data/texts/'

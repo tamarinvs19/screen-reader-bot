@@ -32,10 +32,11 @@ def help_command(update: Update, _: CallbackContext) -> None:
     Commands:
     /help          : this help
     /start         : say hello
-    /j <text>      : found text in all questions and return answers
+    /j <text>      : find text in all questions and return answers
+    /a <text>      : find text in all answers and return answers
     /inf           : run an infinity checking screens and sending here
     /channal       : run an infinity checking screens and sending to the channal 
-    <another text> : found screens on this computer and retrun answers
+    <another text> : find screens on this computer and retrun answers
     """)
 
 
@@ -46,6 +47,12 @@ def echo(update: Update, _: CallbackContext) -> None:
 
 def get_answer(update: Update, context: CallbackContext) -> None:
     answers = mod_get_answer.get_answer(context.args[0])
+    print(answers)
+    send_info(answers, update.message.reply_text)
+
+
+def find_answer(update: Update, context: CallbackContext) -> None:
+    answers = mod_get_answer.find_answer(context.args[0])
     send_info(answers, update.message.reply_text)
 
 
@@ -88,6 +95,9 @@ def main_bot() -> None:
     dispatcher.add_handler(CommandHandler("inf", run_infty_autoscaning))
     dispatcher.add_handler(CommandHandler("inf_channal", autosending_to_channal))
     dispatcher.add_handler(CommandHandler("j", get_answer))
+    dispatcher.add_handler(CommandHandler("a", find_answer))
+    dispatcher.add_handler(CommandHandler("0", get_answer))
+    dispatcher.add_handler(CommandHandler("9", find_answer))
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, echo)
         )

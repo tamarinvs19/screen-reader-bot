@@ -31,11 +31,16 @@ def run_tesseract(img_name: str, output_name: str) -> None:
     os.system('rm {}'.format(img_name))
 
 
+def backup_image(img_name: str) -> None:
+    os.system('cp {dir_name}{name} {backup_dir}{name}'.format(name=img_name, backup_dir=cfg.BACKUP_DIR, dir_name=cfg.DIR_NAME))
+
+
 def read_all(dir_name: str, output_dir: str) -> None:
     files: [str] = os.popen('ls {}'.format(dir_name)).read().split('\n')[:-1]
     file_name: str
     for file_name in files:
         crop(dir_name + file_name)
+        backup_image(file_name)
         run_tesseract(dir_name + file_name, output_dir + file_name)
 
 
