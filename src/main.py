@@ -1,6 +1,3 @@
-import time
-import requests
-
 import parse_text
 import img_to_text
 import get_answer
