@@ -3,16 +3,16 @@ import time
 import requests
 
 from telegram import Update, ForceReply
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
 import config as cfg
 import main
 import get_answer as mod_get_answer
 
 
-
 logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
 )
 logger = logging.getLogger(__name__)
 
@@ -35,8 +35,11 @@ def help_command(update: Update, _: CallbackContext) -> None:
     /j <text>      : find text in all questions and return answers
     /a <text>      : find text in all answers and return answers
     /inf           : run an infinity checking screens and sending here
-    /channal       : run an infinity checking screens and sending to the channal 
-    <another text> : find screens on this computer and retrun answers
+    /channal       : run an infinity checking screens and sending to the channal
+    /up <px>       : up the top parsing line
+    /down <px>     : down the top parsing line
+    /reset         : reset parsing line
+    <another text> : found screens on this computer and retrun answers
     """)
 
 
@@ -52,7 +55,7 @@ def get_answer(update: Update, context: CallbackContext) -> None:
 
 
 def find_answer(update: Update, context: CallbackContext) -> None:
-    answers = mod_get_answer.find_answer(context.args[0])
+    answers = mod_get_answer.get_answer(' '.join(context.args))
     send_info(answers, update.message.reply_text)
 
 
@@ -85,6 +88,21 @@ def send_info(answers: list[dict], sender):
                 )
 
 
+def up_line(update: Update, context: CallbackContext) -> None:
+    cfg.CROP_TOP -= int(context.args[0])
+    update.message.reply_text('CROP_TOP = {0}'.format(cfg.DEFAULT_CROP_TOP))
+
+
+def down_line(update: Update, context: CallbackContext) -> None:
+    cfg.CROP_TOP += int(context.args[0])
+    update.message.reply_text('CROP_TOP = {0}'.format(cfg.DEFAULT_CROP_TOP))
+
+
+def reset(update: Update, context: CallbackContext) -> None:
+    cfg.CROP_TOP = cfg.DEFAULT_CROP_TOP
+    update.message.reply_text('CROP_TOP = {0}'.format(cfg.CROP_TOP))
+
+
 def main_bot() -> None:
     """Start the bot."""
     updater = Updater(cfg.TOKEN)
@@ -93,7 +111,12 @@ def main_bot() -> None:
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("inf", run_infty_autoscaning))
-    dispatcher.add_handler(CommandHandler("inf_channal", autosending_to_channal))
+    dispatcher.add_handler(
+        CommandHandler("inf_channal", autosending_to_channal)
+    )
+    dispatcher.add_handler(CommandHandler("up", up_line))
+    dispatcher.add_handler(CommandHandler("down", down_line))
+    dispatcher.add_handler(CommandHandler("reset", reset))
     dispatcher.add_handler(CommandHandler("j", get_answer))
     dispatcher.add_handler(CommandHandler("a", find_answer))
     dispatcher.add_handler(CommandHandler("0", get_answer))
