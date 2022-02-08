@@ -1,5 +1,5 @@
 # Telegram bot parameters
-CHANNEL_ID = 'your-channel-id'
+CHANNEL_ID = '<TOKEN>'
 with open('.env', 'rt') as token:
     TOKEN = token.readline().strip()
 
@@ -7,19 +7,19 @@ with open('.env', 'rt') as token:
 MAX_MESSAGE_COUNT = 15
 DELAY = 15
 
-# Cropping parameters. Correction for your display is IMPORTANT!
+# Cropping parameters. YOU SHOULD CHANGE IT FOR YOUR DISPLAY!
 DEFAULT_CROP_TOP = 110
 CROP_TOP = 110
 CROP_LEFT = 350
 CROP_RIGHT = 400
 
-# Table with answers: data/philosophy.csv or data/effective_communication.csv
-ANSWERS_TABLE = 'data/business.csv'
+# Table with answers
+ANSWERS_TABLE = 'data/<file_name>'
 
 # Directory with screenshots.
 # Remember that all pictures here will be deleted after scanning!
 BACKUP_DIR: str = '~/Pictures/Screenshots_back/'
-DIR_NAME: str = '~/Pictures/Screenshots/business/'
+DIR_NAME: str = '~/Pictures/Screenshots/'
 
 # Technical directory for parsing texts
 OUTPUT_DIR: str = 'data/texts/'

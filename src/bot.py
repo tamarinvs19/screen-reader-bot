@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 def start(update: Update, _: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
+    print(user)
     update.message.reply_markdown_v2(
         fr'Hi {user.mention_markdown_v2()}\!',
         reply_markup=ForceReply(selective=True),
@@ -32,8 +33,8 @@ def help_command(update: Update, _: CallbackContext) -> None:
     Commands:
     /help          : this help
     /start         : say hello
-    /j <text>      : find text in all questions and return answers
-    /a <text>      : find text in all answers and return answers
+    /j <or> 0 <text>      : find text in all questions and return answers
+    /a <or> 9 <text>      : find text in all answers and return answers
     /inf           : run an infinity checking screens and sending here
     /channal       : run an infinity checking screens and sending to the channal
     /up <px>       : up the top parsing line
@@ -76,7 +77,8 @@ def autosending_to_channal(update: Update, context: CallbackContext):
 
 def send_telegram(text: str):
     url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'
-    requests.get(url.format(cfg.TOKEN, cfg.CHANNEL_ID, text))
+    x = requests.get(url.format(cfg.TOKEN, cfg.CHANNEL_ID, text))
+    print(x)
 
 
 def send_info(answers: list[dict], sender):
@@ -108,6 +110,7 @@ def main_bot() -> None:
     updater = Updater(cfg.TOKEN)
 
     dispatcher = updater.dispatcher
+
     dispatcher.add_handler(CommandHandler("start", start))
     dispatcher.add_handler(CommandHandler("help", help_command))
     dispatcher.add_handler(CommandHandler("inf", run_infty_autoscaning))
@@ -124,6 +127,9 @@ def main_bot() -> None:
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, echo)
         )
+    url = 'https://api.telegram.org/bot{}/getUpdates'
+    x = requests.get(url.format(cfg.TOKEN))
+    print(x.content)
 
     updater.start_polling()
     updater.idle()
