@@ -2,7 +2,7 @@ import logging
 import time
 import requests
 
-from telegram import Update, ForceReply
+from telegram import Update, ForceReply, KeyboardButton, ReplyKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler, Filters, MessageHandler, Updater
 
 import config as cfg
@@ -16,14 +16,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+button_hi = KeyboardButton('Привет!')
+greet_kb = ReplyKeyboardMarkup([[button_hi]])
+
 
 def start(update: Update, _: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
     user = update.effective_user
-    print(user)
     update.message.reply_markdown_v2(
         fr'Hi {user.mention_markdown_v2()}\!',
-        reply_markup=ForceReply(selective=True),
+        reply_markup=greet_kb,
     )
 
 
