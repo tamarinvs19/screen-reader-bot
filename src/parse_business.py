@@ -3,7 +3,7 @@ import re
 
 
 def parse_business(text_file_name: str, csv_file_name: str) -> None:
-    table_dict: [dict] = []
+    table_dict: list[dict] = []
     question: str = ''
     answer: str = ''
     flag: str = ''
@@ -37,4 +37,4 @@ def parse_business(text_file_name: str, csv_file_name: str) -> None:
 
 
 if __name__ == '__main__':
-    parse_business('data/business1.txt', 'data/business.csv')
+    parse_business('data/business1.txt', 'data/business1.csv')

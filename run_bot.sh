@@ -1,2 +1,2 @@
-cd ~/screen-reader-bot/
+cd /home/vyacheslav/screen-reader-bot
 venv/bin/python src/bot.py &

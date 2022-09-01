@@ -16,9 +16,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-button_hi = KeyboardButton('Привет!')
-greet_kb = ReplyKeyboardMarkup([[button_hi]])
-
+button_j = KeyboardButton('j')
+greet_kb = ReplyKeyboardMarkup([[button_j]], True)
 
 def start(update: Update, _: CallbackContext) -> None:
     """Send a message when the command /start is issued."""
@@ -42,6 +41,11 @@ def help_command(update: Update, _: CallbackContext) -> None:
     /up <px>       : up the top parsing line
     /down <px>     : down the top parsing line
     /reset         : reset parsing line
+    /ll            : move left the left parsing line
+    /lr            : move right the left parsing line
+    /rl            : move left the right parsing line
+    /rr            : move right the right parsing line
+    /resetlr       : reset the left and the right lines
     <another text> : found screens on this computer and retrun answers
     """)
 
@@ -53,7 +57,6 @@ def echo(update: Update, _: CallbackContext) -> None:
 
 def get_answer(update: Update, context: CallbackContext) -> None:
     answers = mod_get_answer.get_answer(context.args[0])
-    print(answers)
     send_info(answers, update.message.reply_text)
 
 
@@ -80,7 +83,6 @@ def autosending_to_channal(update: Update, context: CallbackContext):
 def send_telegram(text: str):
     url = 'https://api.telegram.org/bot{}/sendMessage?chat_id={}&text={}'
     x = requests.get(url.format(cfg.TOKEN, cfg.CHANNEL_ID, text))
-    print(x)
 
 
 def send_info(answers: list[dict], sender):
@@ -88,23 +90,73 @@ def send_info(answers: list[dict], sender):
         for answer in answers:
             sender(
                 '__Question__: {} \n\n__Answer__: {}'.
-                format(str(answer['question']), str(answer['answer']))
+                format(str(answer['question']), str(answer['answer'])),
+                reply_markup=greet_kb,
                 )
 
 
 def up_line(update: Update, context: CallbackContext) -> None:
     cfg.CROP_TOP -= int(context.args[0])
-    update.message.reply_text('CROP_TOP = {0}'.format(cfg.DEFAULT_CROP_TOP))
+    update.message.reply_text(
+        'CROP_TOP = {0}'.format(cfg.CROP_TOP),
+        reply_markup=greet_kb,
+    )
 
 
 def down_line(update: Update, context: CallbackContext) -> None:
     cfg.CROP_TOP += int(context.args[0])
-    update.message.reply_text('CROP_TOP = {0}'.format(cfg.DEFAULT_CROP_TOP))
+    update.message.reply_text(
+        'CROP_TOP = {0}'.format(cfg.CROP_TOP),
+        reply_markup=greet_kb,
+    )
+
+
+def left_left_line(update: Update, context: CallbackContext) -> None:
+    cfg.CROP_LEFT -= int(context.args[0])
+    update.message.reply_text(
+        'CROP_LEFT = {0}'.format(cfg.CROP_LEFT),
+        reply_markup=greet_kb,
+    )
+
+
+def left_right_line(update: Update, context: CallbackContext) -> None:
+    cfg.CROP_LEFT += int(context.args[0])
+    update.message.reply_text(
+        'CROP_LEFT = {0}'.format(cfg.CROP_LEFT),
+        reply_markup=greet_kb,
+    )
+
+
+def right_left_line(update: Update, context: CallbackContext) -> None:
+    cfg.CROP_RIGHT -= int(context.args[0])
+    update.message.reply_text(
+        'CROP_RIGHT = {0}'.format(cfg.CROP_RIGHT),
+        reply_markup=greet_kb,
+    )
+
+
+def right_right_line(update: Update, context: CallbackContext) -> None:
+    cfg.CROP_LEFT += int(context.args[0])
+    update.message.reply_text(
+        'CROP_RIGHT = {0}'.format(cfg.CROP_RIGHT),
+        reply_markup=greet_kb,
+    )
 
 
 def reset(update: Update, context: CallbackContext) -> None:
     cfg.CROP_TOP = cfg.DEFAULT_CROP_TOP
-    update.message.reply_text('CROP_TOP = {0}'.format(cfg.CROP_TOP))
+    update.message.reply_text(
+        'CROP_TOP = {0}'.format(cfg.CROP_TOP),
+        reply_markup=greet_kb,
+    )
+
+def reset_left_right(update: Update, context: CallbackContext) -> None:
+    cfg.CROP_LEFT = cfg.DEFAULT_CROP_LEFT
+    cfg.CROP_RIGHT = cfg.DEFAULT_CROP_RIGHT
+    update.message.reply_text(
+        'CROP_LEFT = {0}\nCROP_RIGHT'.format(cfg.CROP_LEFT, cfg.CROP_RIGHT),
+        reply_markup=greet_kb,
+    )
 
 
 def main_bot() -> None:
@@ -122,16 +174,18 @@ def main_bot() -> None:
     dispatcher.add_handler(CommandHandler("up", up_line))
     dispatcher.add_handler(CommandHandler("down", down_line))
     dispatcher.add_handler(CommandHandler("reset", reset))
+    dispatcher.add_handler(CommandHandler("ll", left_left_line))
+    dispatcher.add_handler(CommandHandler("lr", left_right_line))
+    dispatcher.add_handler(CommandHandler("rl", left_left_line))
+    dispatcher.add_handler(CommandHandler("rr", left_right_line))
+    dispatcher.add_handler(CommandHandler("resetlr", reset_left_right))
     dispatcher.add_handler(CommandHandler("j", get_answer))
     dispatcher.add_handler(CommandHandler("a", find_answer))
     dispatcher.add_handler(CommandHandler("0", get_answer))
     dispatcher.add_handler(CommandHandler("9", find_answer))
     dispatcher.add_handler(
         MessageHandler(Filters.text & ~Filters.command, echo)
-        )
-    url = 'https://api.telegram.org/bot{}/getUpdates'
-    x = requests.get(url.format(cfg.TOKEN))
-    print(x.content)
+    )
 
     updater.start_polling()
     updater.idle()

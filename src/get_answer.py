@@ -3,7 +3,7 @@ import csv
 import config as cfg
 
 
-def get_answer(question: str) -> [str]:
+def get_answer(question: str) -> list[str]:
     def pattern(row):
         return any([
             row[:12] == question[3:15],
@@ -29,7 +29,7 @@ def get_answer(question: str) -> [str]:
     return filtred_data
 
 
-def find_answer(answer: str) -> [str]:
+def find_answer(answer: str) -> list[str]:
     def pattern(row):
         return answer in row
 
